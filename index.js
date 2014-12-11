@@ -1,13 +1,30 @@
 var express = require('express');
 var app = express();
+var request = require('request');
+var cors = require('cors');
+var bodyParser = require('body-parser');
 
-app.set('port', (process.env.PORT || 5000));
-app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({
+  origin: function(origin, callback){
+    callback(null, true);
+  }
+}));
 
-app.get('/', function(request, response) {
-  response.send('Hello World!');
+console.log('loaded');
+app.post('/github/auth_token', function(req, res) {
+  var data = req.body.data;
+  console.log(data);
+  request.post('https://github.com/login/oauth/access_token', {json: data}, function(err, resp) {
+    console.log(resp);
+    if (err) {
+      return res.send(500, err);
+    }
+
+    console.log(resp.body);
+    return res.json(resp.body);
+  });
 });
 
-app.listen(app.get('port'), function() {
-  console.log("Node app is running at localhost:" + app.get('port'));
-});
+app.listen(8200);
