@@ -27,4 +27,4 @@ app.post('/github/auth_token', function(req, res) {
   });
 });
 
-app.listen(8200);
+app.listen(process.env.PORT || 8200);
